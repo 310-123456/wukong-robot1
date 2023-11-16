@@ -331,12 +331,13 @@ class Conversation(object):
                         audios.append(audio)
             return audios
 
-    def create_video(self,audios,video,cache):
-        video_resolution="640*640"
-        video_path=''
-        for audio in audios:
-            if audio:
-                subprocess.run(['python','/root/wukong-robot-master/plugins/GeneFace/inference/test/test.py'],)
+     def generate_face(self,lines):
+        command = ["python", "/root/wukong-robot-master/plugins/GeneFace/inference/test/test.py",lines]
+        try:
+            video=subprocess.run(command,capture_output=True, check=True)
+        except subprocess.CalledProcessEorror as e:
+            print("视频生成失败！")
+        return video
 
 
         
@@ -420,7 +421,7 @@ class Conversation(object):
         logger.debug(f"tts_count: {self.tts_count}")
         audios = self._tts(lines, cache, onCompleted)
 
-        video_path=self.geneface(audios,cache)
+        video_path=self.generate_face(lines)
 
         self._after_play(msg, audios, plugin,video_path)
 
